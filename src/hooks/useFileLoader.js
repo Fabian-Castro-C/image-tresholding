@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { parseAsciiFile } from "../services/imageProcessor"
 
 /**
@@ -13,15 +13,22 @@ export default function useFileLoader() {
    * Load and parse an ASCII file.
    * @param {string} file_path - The file to load.
    */
-  async function loadFile(file_path) {
+  const loadFile = useCallback(async (file_path) => {
     try {
-      const fileContent = await fetch(file_path)
-      const parsedData = parseAsciiFile(fileContent)
-      setParsedData(parsedData)
-    } catch (error) {
-      setError(error)
+      const fileContent = await fetch(file_path).then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error al cargar el archivo: ${response.statusText}`)
+        }
+        return response.text()
+      })
+
+      setParsedData(parseAsciiFile(fileContent))
+      setError(null)
+    } catch (err) {
+      setError(err.message || "Error desconocido")
+      setParsedData(null) // Limpiar datos previos en caso de error
     }
-  }
+  }, [])
 
   return { parsedData, error, loadFile }
 }
