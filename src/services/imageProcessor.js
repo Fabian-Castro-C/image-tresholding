@@ -10,22 +10,36 @@ export function parseAsciiFile(fileContent) {
   const metadata = {}
   const data = []
 
-  lines.forEach( (line, index) => {
+  lines.forEach((line, index) => {
     if (line.startsWith('#')) {
       // Parse metadata
-      if (index === 0) {
-        metadata.channel = line.split(':')[1].trim()
-      } else if (index === 1) {
-        metadata.width = convertToMeters(line.split(':')[1].trim())
-      } else if (index === 2) {
-        metadata.height = convertToMeters(line.split(':')[1].trim())
-      } else if (index === 3) {
-        metadata.zUnit = convertToMeters(line.split(':')[1].trim())
+      const parts = line.split(':')
+      if (parts.length < 2) return // Saltar líneas mal formateadas
+      const value = parts[1].trim()
+
+      try {
+        if (index === 0) {
+          metadata.channel = value
+        } else if (index === 1) {
+          metadata.width = convertToMeters(value)
+        } else if (index === 2) {
+          metadata.height = convertToMeters(value)
+        } else if (index === 3) {
+          metadata.zUnit = convertToMeters(value)
+        }
+      } catch (err) {
+        throw new Error(`Error procesando metadata en la línea ${index + 1}: ${err.message}`)
       }
-    }
-    else {
+    } else {
       // Parse data
-      data.push(line.split(' ').map(number => parseFloat(number)))
+      if (line.trim() === '') return // Ignorar líneas vacías
+      const numbers = line.split('	').map((number) => parseFloat(number))
+
+      if (numbers.some(isNaN)) {
+        throw new Error(`Error procesando datos numéricos en la línea ${index + 1}`)
+      }
+
+      data.push(numbers)
     }
   })
   
