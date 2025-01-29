@@ -1,3 +1,11 @@
+/**
+ * Draw the given data on the given canvas using the given colormap.
+ * @param {Object} options - The options object.
+ * @param {HTMLCanvasElement} options.canvas - The canvas element to draw on.
+ * @param {number[][]} options.data - The data to draw.
+ * @param {function} options.colormap - The colormap function to use.
+ * @returns {void}
+ */
 export function drawCanvas({ canvas, data, colormap }) {
   const context = canvas.getContext("2d")
 
