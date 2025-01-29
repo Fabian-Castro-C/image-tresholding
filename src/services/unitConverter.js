@@ -5,8 +5,8 @@ const unitMultipliers = {
   um: 1e-6,
   "µm": 1e-6,
   nm: 1e-9,
-  "A": 1e-10,
   "Å": 1e-10,
+  "A": 1e-10,
   pm: 1e-12,
 }
 
@@ -33,4 +33,21 @@ export function convertToMeters(valueWithUnit) {
   const numericValue = value ? parseFloat(value) : 1
 
   return numericValue * multiplier
+}
+
+/**
+ * Converts a value in meters to a value with a unit.
+ * @param {number} value - The value to convert.
+ * @returns {Object} - An object containing the value and unit.
+ */
+export function convertToUnit(val, scale) {
+  for (const unit in unitMultipliers) {
+    const multiplier = unitMultipliers[unit]
+    const convertedValue = scale / multiplier
+
+    if (Math.abs(convertedValue) >= 1) {
+      return { value: val/multiplier, unit }
+    }
+  }
+  return {value: 0, unit: ''}
 }
