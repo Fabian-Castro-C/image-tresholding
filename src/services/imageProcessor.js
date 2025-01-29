@@ -1,6 +1,29 @@
 import { convertToMeters } from "./unitConverter"
 
 /**
+ * Sets the minimum value of a matrix to zero.
+ * @param {number[][]} data - The matrix to process.
+ * @returns {number[][]} - The processed matrix.
+ */
+export function setZeroReference(data) {
+  const dataCopy = [...data]
+  let min = Infinity
+  for (let row of dataCopy) {
+    for (let value of row) {
+      if (value < min) {
+        min = value
+      }
+    }
+  }
+  for (let row of dataCopy) {
+    for (let i = 0; i < row.length; i++) {
+      row[i] -= min
+    }
+  }
+  return dataCopy
+}
+
+/**
  * Parse an ASCII file containing AFM image data.
  * @param {string} fileContent - The ASCII data to parse.
  * @returns {Object} - The parsed image data including width, height and data matrix.
@@ -42,6 +65,7 @@ export function parseAsciiFile(fileContent) {
       data.push(numbers)
     }
   })
-  
-  return { metadata, data }
+  const dataSetReference = setZeroReference(data)
+  return { metadata, data: dataSetReference }
 }
+
