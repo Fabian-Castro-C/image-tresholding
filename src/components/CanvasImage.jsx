@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import { drawCanvas } from "../services/drawCanvas"
+import useCursorTooltip from "../hooks/useCursorTooltip"
+import CursorTooltip from "./CursorTooltip"
+import "../styles/CanvasImage.css"
 
 /**
  * Component to render an image on a canvas based on a height data matrix.
@@ -10,6 +13,7 @@ import { drawCanvas } from "../services/drawCanvas"
  */
 const CanvasImage = ({ data, metadata, colormap }) => {
   const canvasRef = useRef(null)
+  const { tooltip, handleMouseMove, handleMouseLeave } = useCursorTooltip(canvasRef.current, data, metadata)
 
   useEffect(() => {
     if (data && metadata) {
@@ -19,12 +23,25 @@ const CanvasImage = ({ data, metadata, colormap }) => {
   }, [data, metadata, colormap])
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        border: "1px solid black",
-      }}
-    ></canvas>
+    <div className="canvas-container">
+      <canvas
+        ref={canvasRef}
+        className="canvas-image"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      ></canvas>
+      {tooltip.visible && (
+        <CursorTooltip
+          x={tooltip.x}
+          y={tooltip.y}
+          z={tooltip.z}
+          visible={tooltip.visible}
+          position={tooltip.position}
+          width={tooltip.width}
+          height={tooltip.height}
+        />
+      )}
+    </div>
   )
 }
 
