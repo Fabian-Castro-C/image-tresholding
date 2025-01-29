@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react"
 import CanvasImage from "./components/CanvasImage"
 import useFileLoader from "./hooks/useFileLoader"
+import { colorMapHot } from "./services/colorMaps"
 
 const IMAGE_PATH = "../public/example.txt"
 
@@ -15,10 +16,7 @@ function App() {
     fetchData()
   }, [loadFile])
 
-  const colormap = useMemo(() => (value) => {
-    const gray = Math.floor(value * 255)
-    return [gray, gray, gray, 255]
-  }, [])
+  const colormap = useMemo(() => colorMapHot, [])
 
   return (
     <>
